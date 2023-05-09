@@ -12,9 +12,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<app.runtime>4.4.0-20220824</app.runtime>
-		<mule.maven.plugin.version>3.8.0</mule.maven.plugin.version>
+		<app.runtime>4.4.0-20220919</app.runtime>
+		<mule.maven.plugin.version>3.4.0</mule.maven.plugin.version>
 	</properties>
 
 	<build>
@@ -27,8 +26,38 @@
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
 				<artifactId>mule-maven-plugin</artifactId>
-				<version>${mule.maven.plugin.version}</version>
+				<version>3.8.0</version>
 				<extensions>true</extensions>
+				<configuration>
+					<!--  Adding the below tag for CI-CD Purpose -->
+					<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>4.4.0</muleVersion>
+						<username>contentlearning</username>
+						<password>Salesforce@23</password>
+						<environment>Sandbox</environment>
+						<applicationName>mule-meetup-demo123</applicationName>
+						<businessGroup>PantherSchools</businessGroup>
+						<workerType>MICRO</workerType>
+						<workers>1</workers>
+						<objectStoreV2>true</objectStoreV2>
+					</cloudHubDeployment>
+					<!--
+					<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>${mule.version}</muleVersion>
+						<username>${anypoint.username}</username>
+						<password>${anypoint.password}</password>
+						<environment>${env}</environment>
+						<applicationName>${app.name}</applicationName>
+						<businessGroup>${businessGroup}</businessGroup>
+						<workerType>${wokerType}</workerType>
+						<workers>${workerSize}</workers>
+						<objectStoreV2>true</objectStoreV2>
+					</cloudHubDeployment>
+					-->
+					<!--  Adding the below tag for CI-CD Purpose -->
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -44,6 +73,12 @@
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-sockets-connector</artifactId>
 			<version>1.2.2</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.connectors</groupId>
+			<artifactId>mule4-asana-connector</artifactId>
+			<version>1.0.7</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
