@@ -1,0 +1,122 @@
+name: Build and Deploy to Sandbox in Cloudhub
+
+on:
+  push:
+    branches:
+      - feature/*
+      - developer
+      - master
+    #paths:
+      #- 'src/**'
+  pull_request:
+    branches:
+      - master
+      - main
+    types:
+      - closed
+    paths:
+      - 'src/**'
+      
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      id: checkout-code
+      with:
+        fetch-depth: 0
+    
+    - uses: actions/cache@v3.2.1
+      id: prepare-chache
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    
+    - name: Set up Java JDK
+      id: setup-jdk
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: 8
+    
+    - name: Build with Maven
+      id: maven-build
+      # run: mvn clean -B package -s .maven/settings.xml
+      run: mvn -B package --file pom.xml
+          
+    - name: Stamp artifact file name with commit hash
+      id: prepare-artifacts
+      run: |
+        artifactName1=$(ls target/*.jar | head -1)
+        commitHash=$(git rev-parse --short "$GITHUB_SHA")
+        artifactName2=$(ls target/*.jar | head -1 | sed "s/.jar/-$commitHash.jar/g")
+        mv $artifactName1 $artifactName2
+    
+    - name: Upload artifact 
+      id: upload-artifacts
+      uses: actions/upload-artifact@master
+      with:
+          name: artifacts
+          path: target/*.jar
+  
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Checking Cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Build with Maven
+      run: mvn clean test -DruntimeProduct=MULE_EE
+      
+  deploy:
+  
+    needs: test
+    runs-on: ubuntu-latest
+    steps:   
+      
+    - uses: actions/checkout@v3
+      id: checkout-code
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Java JDK
+      id: setup-jdk
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: 8
+        
+    - uses: actions/cache@v3.2.1
+      id: prepare-cache
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    
+    - uses: actions/download-artifact@master
+      id: download-mule-artifacts
+      with:
+        name: artifacts
+    
+    - name: Deploy to Sandbox
+      id: deploy-mule-artifacts
+      run: |
+        
+        mvn clean deploy -DmuleDeploy
+        
+        
