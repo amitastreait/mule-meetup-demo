@@ -9,6 +9,9 @@ http://www.mulesoft.org/schema/mule/asana http://www.mulesoft.org/schema/mule/as
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="40442334-0d96-4f8a-ae3e-1364bc3f2a18" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a2f01fa7-ac99-4061-9829-4266328cce11">
+		<http:request-connection host="icanhazdadjoke.com" protocol="HTTPS"/>
+	</http:request-config>
 	<flow name="mule-meetupFlow" doc:id="cfd861c5-e988-434c-82bc-f11c09f5b76d" >
 		<http:listener doc:name="GET:/hello" doc:id="05455011-46ed-406d-9e13-cf5acea0b351" config-ref="HTTP_Listener_config" path="/hello"/>
 		<ee:transform doc:name="Transform Message" doc:id="87b77191-6e6e-4a10-9242-bee4e160ac42" >
@@ -18,6 +21,21 @@ output application/json
 ---
 {
 	"message": "WELCOME TO THE SALESFORCE WORLD!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="joke-flow" doc:id="165a06b4-efd5-4059-b824-6ea85a42847b" >
+		<http:listener doc:name="GET :/joke" doc:id="a3c08fa8-6d1a-4cab-a1b0-56e9a0669907" config-ref="HTTP_Listener_config" path="/joke"/>
+		<http:request method="GET" doc:name="Request :/joke" doc:id="4767b712-1b1a-425b-ad5d-bf14ebaedebd" config-ref="HTTP_Request_configuration" path="/slack"/>
+		<ee:transform doc:name="Transform Message" doc:id="fa58ecfe-ee45-43e3-8d80-83f56d31375f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"joke" : payload.attachments map (item, index) -> {
+	fallback: item.fallback,
+	text: item.text
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

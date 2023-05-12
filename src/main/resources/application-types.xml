@@ -1,4 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
-  <types:catalog/>
+  <types:catalog>
+    <types:type name="jokeresponse" format="json">
+      <types:shape format="weave" example="examples/joke.json"><![CDATA[%dw 2.0
+
+type jokeresponse = {|
+  attachments: Array<{|    fallback: String,     footer: String,     text: String  |}>, 
+  response_type: String, 
+  username: String
+|} {"example": "{\\\"attachments\\\":[{\\\"fallback\\\":\\\"To be Frank, I'd have to change my name.\\\",\\\"footer\\\":\\\"<https:\\/\\/icanhazdadjoke.com\\/j\\/1DQZvcFBdib|permalink> - <https:\\/\\/icanhazdadjoke.com|icanhazdadjoke.com>\\\",\\\"text\\\":\\\"To be Frank, I'd have to change my name.\\\"}],\\\"response_type\\\":\\\"in_channel\\\",\\\"username\\\":\\\"icanhazdadjoke\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#fa58ecfe-ee45-43e3-8d80-83f56d31375f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="jokeresponse"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>
