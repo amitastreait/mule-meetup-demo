@@ -36,7 +36,7 @@
 						<username>contentlearning1</username>
 						<password>Salesforce@23</password>
 						<environment>Sandbox</environment>
-						<applicationName>mule-meetup-demo123</applicationName>
+						<applicationName>mule-meetup-demo123345</applicationName>
 						<businessGroup>PantherSchools</businessGroup>
 						<workerType>MICRO</workerType>
 						<workers>1</workers>
