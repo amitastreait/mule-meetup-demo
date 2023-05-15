@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="6746c0d1-827f-4877-89fb-d830c074746a" >
+		<mongo:connection-string-connection connectionString="mongodb+srv://sfdcpanther:nvdC8uKVUZumrR4V@pantherschools.qwovvkj.mongodb.net/sample_airbnb?retryWrites=true&amp;w=majority" />
+	</mongo:config>
+	<flow name="mongo-dbFlow" doc:id="a04fa2d7-81e2-4dfc-96a8-192e88cc5db3" >
+		<http:listener doc:name="GET :/db" doc:id="731cc5ef-e9d2-402d-8c9c-716b74b19393" config-ref="HTTP_Listener_config" path="/db"/>
+		<set-variable value='#[attributes.queryParams.fileName default ""]' doc:name="fileName" doc:id="61a8db01-9832-42ae-ab75-b5dcae8f1750" variableName="fileName"/>
+		<validation:is-not-null doc:name="fileName Is not null" doc:id="7c40a831-9bf0-48ea-97c8-6d1b9a1c44ae" value="#[isBlank(vars.fileNamefileName)]" message="File Name can not be blank!"/>
+		<ee:transform doc:name="Transform Message" doc:id="a9e6c309-a422-4a91-9d59-3743e251e477" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Mongo DB Test",
+	"uuid" : uuid(),
+	"filename" : vars.fileName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<mongo:create-file doc:name="Create file" doc:id="7a548ea7-e536-4665-b5d1-f568fd5289e1" config-ref="MongoDB_Config" filename='#[vars.fileName ++ ".txt"]'>
+			<mongo:metadata ><![CDATA[#[payload]]]></mongo:metadata>
+		</mongo:create-file>
+		<ee:transform doc:name="Transform Message" doc:id="2afc7497-0a24-4e10-a01b-7b81b66a9c0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	response : payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

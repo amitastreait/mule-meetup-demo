@@ -57,6 +57,12 @@
 					</cloudHubDeployment>
 					-->
 					<!--  Adding the below tag for CI-CD Purpose -->
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>org.mongodb</groupId>
+							<artifactId>mongodb-driver-legacy</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -79,6 +85,23 @@
 			<groupId>com.mulesoft.connectors</groupId>
 			<artifactId>mule4-asana-connector</artifactId>
 			<version>1.0.7</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.connectors</groupId>
+			<artifactId>mule-mongodb-connector</artifactId>
+			<version>6.3.7</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-legacy</artifactId>
+			<version>4.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-validation-module</artifactId>
+			<version>2.0.3</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
