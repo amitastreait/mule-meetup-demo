@@ -99,20 +99,7 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 8
-        
-    - uses: actions/cache@v3.2.1
-      id: prepare-cache
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-    
-    - uses: actions/download-artifact@master
-      id: download-mule-artifacts
-      with:
-        name: artifacts
-    
+       
     - name: Deploy to Sandbox
       id: deploy-mule-artifacts
       run: |
